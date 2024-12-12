@@ -41,7 +41,7 @@ public class Birthday {
     }
 
     public static String formatTheDate(String myBirthdayInput) {
-        if (myBirthdayInput.length() == 8 || myBirthdayInput.length() == 9) {
+        if (myBirthdayInput.length() == 6 || myBirthdayInput.length() == 8 || myBirthdayInput.length() == 9) {
             return formatTheDate2(myBirthdayInput);
         }
 
@@ -63,6 +63,13 @@ public class Birthday {
     public static String formatTheDate2(String myBirthdayInput) {
         String str = "";
 
+        if (myBirthdayInput.length() == 6) {
+            for (int i = 0; i < 4; i++) {
+                str += myBirthdayInput.charAt(i);
+            }
+            str += "-0" + myBirthdayInput.charAt(4) + "-0" + myBirthdayInput.charAt(5);
+        }
+
         if (myBirthdayInput.length() == 8) {
             for (int i = 0; i < 4; i++) {
                 str += myBirthdayInput.charAt(i);
@@ -70,11 +77,23 @@ public class Birthday {
             str += "-";
 
             for (int i = 0; i < 2; i++) {
+                if (myBirthdayInput.charAt(i + 4) == ' ' || myBirthdayInput.charAt(i + 4) == ','
+                        || myBirthdayInput.charAt(i + 4) == '.' || myBirthdayInput.charAt(i + 4) == '/'
+                        || myBirthdayInput.charAt(i + 4) == '-') {
+                    str += "0";
+                    continue;
+                }
                 str += myBirthdayInput.charAt(i + 4);
             }
             str += "-";
 
             for (int i = 0; i < 2; i++) {
+                if (myBirthdayInput.charAt(i + 6) == ' ' || myBirthdayInput.charAt(i + 6) == ','
+                        || myBirthdayInput.charAt(i + 6) == '.' || myBirthdayInput.charAt(i + 6) == '/'
+                        || myBirthdayInput.charAt(i + 6) == '-') {
+                    str += "0";
+                    continue;
+                }
                 str += myBirthdayInput.charAt(i + 6);
             }
         }
