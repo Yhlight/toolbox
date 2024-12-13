@@ -14,6 +14,7 @@ public class Birthday {
             myBirthdayInput = scan.nextLine();
             myBirthdayInput = formatTheDate(myBirthdayInput);
             myBirthday = createBirthdayWithCurrentYear(myBirthdayInput);
+            dayOfWeek(myBirthday);
             isBirthday(myBirthdayInput, myBirthday);
         } catch (DateTimeParseException e) {
             throw new RuntimeException("输入的日期格式错误或输入的日期非法");
@@ -147,10 +148,34 @@ public class Birthday {
         return count;
     }
 
-    public static void isBirthday(String myBirthdayInput, LocalDate myBirthday) {
+    public static void dayOfWeek(LocalDate myBirthday) {
         DayOfWeek dayOfWeek = myBirthday.getDayOfWeek();
-        System.out.println("你的生日是:" + dayOfWeek);
+        switch (String.valueOf(dayOfWeek)) {
+            case "MONDAY":
+                System.out.println("你的生日是:星期一");
+                break;
+            case "TUESDAY":
+                System.out.println("你的生日是:星期二");
+                break;
+            case "WEDNESDAY":
+                System.out.println("你的生日是:星期三");
+                break;
+            case "THURSDAY":
+                System.out.println("你的生日是:星期四");
+                break;
+            case "FRIDAY":
+                System.out.println("你的生日是:星期五");
+                break;
+            case "SATURDAY":
+                System.out.println("你的生日是:星期六");
+                break;
+            case "SUNDAY":
+                System.out.println("你的生日是:星期日");
+                break;
+        }
+    }
 
+    public static void isBirthday(String myBirthdayInput, LocalDate myBirthday) {
         LocalDate today = LocalDate.now();
         long daysUntilMyBirthday = ChronoUnit.DAYS.between(today, myBirthday);
         if (daysUntilMyBirthday < 0) {
