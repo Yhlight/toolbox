@@ -92,24 +92,32 @@ public class Birthday {
         LocalDate birthday = LocalDate.parse(formattedBirthday);
         LocalDate realBirthday = null;
 
-        if (compareYears(getYears(formattedBirthday), String.valueOf(currentYear)) == -1) {
+        if (compareYears(getYearsToString(formattedBirthday), String.valueOf(currentYear)) == -1) {
             realBirthday = birthday.withYear(currentYear);
         } else if (compareDate(String.valueOf(now), formatTheDate(formattedBirthday)) == 1) {
             realBirthday = birthday.withYear(currentYear + 1);
         } else if (compareDate(String.valueOf(now), formatTheDate(formattedBirthday)) == -1) {
-            realBirthday = birthday.withYear(Integer.parseInt(getYears(formattedBirthday)));
+            realBirthday = birthday.withYear(Integer.parseInt(getYearsToString(formattedBirthday)));
         } else {
             realBirthday = birthday.withYear(currentYear + 1);
         }
         return realBirthday;
     }
 
-    public static String getYears(String myBirthdayInput) {
+    public static String getYearsToString(String myBirthdayInput) {
         String str = "";
         for (int i = 0; i < 4; i++) {
             str += myBirthdayInput.charAt(i);
         }
         return str;
+    }
+
+    public static int getYearsToInt(String myBirthdayInput) {
+        String str = "";
+        for (int i = 0; i < 4; i++) {
+            str += myBirthdayInput.charAt(i);
+        }
+        return Integer.parseInt(str);
     }
 
     public static int compareYears(String str1, String str2) {
@@ -179,7 +187,14 @@ public class Birthday {
         LocalDate today = LocalDate.now();
         long daysUntilMyBirthday = ChronoUnit.DAYS.between(today, myBirthday);
         if (daysUntilMyBirthday < 0) {
-            daysUntilMyBirthday = -daysUntilMyBirthday;
+            if ((getYearsToInt(myBirthdayInput) % 4 == 0)
+                    && (getYearsToInt(myBirthdayInput) % 100 != 0)) {
+                daysUntilMyBirthday += 366;
+            } else if (getYearsToInt(myBirthdayInput) % 400 == 0) {
+                daysUntilMyBirthday += 366;
+            } else {
+                daysUntilMyBirthday += 365;
+            }
         }
 
         System.out.println("今年是" + today.getYear() + "年");
@@ -190,7 +205,7 @@ public class Birthday {
         } else if (compareYears(String.valueOf(today), formatTheDate(myBirthdayInput)) == 0) {
             System.out.println("你的生日在今年，距离生日的到来还有" + daysUntilMyBirthday + "天");
         } else {
-            System.out.println("未来的生日！请保持这份对未来的热情，距离明年生日到来还有" + daysUntilMyBirthday + "天");
+            System.out.println("未来的生日！请保持这份对未来的热情，距离生日到来还有" + daysUntilMyBirthday + "天");
         }
     }
 }
