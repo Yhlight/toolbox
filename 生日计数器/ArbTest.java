@@ -24,10 +24,10 @@ class Birthday2 {
     private Birthday2() {
     }
 
-    private static final Birthday2 birthday = new Birthday2();
+    private static final Birthday2 INSTANCE = new Birthday2();
 
     public static Birthday2 getInstance() {
-        return birthday;
+        return INSTANCE;
     }
 
     public LocalDate getMyBirthday() {
