@@ -1,25 +1,32 @@
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Scanner;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class ArbTest {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
         System.out.println("请输入你的生日(yyyy-mm-dd)>");
-        String inputBirthday = scan.nextLine();
-        LocalDate myBirthday = LocalDate.parse(Birthday2.formatTheDate(inputBirthday));
-        Birthday2.getInstance().setMyBirthday(myBirthday);
-        Birthday2.getInstance().setThisYears();
-        Birthday2.getInstance().dayOfWeek();
-        Birthday2.getInstance().isBirthday();
+        try {
+            String inputBirthday = scan.nextLine();
+            LocalDate myBirthday = Birthday2.formatTheDate(inputBirthday);
+            Birthday2.getInstance().setMyBirthday(myBirthday);
+            Birthday2.getInstance().isBirthday();
+        } catch (DateTimeException e) {
+            throw new RuntimeException("输入的日期非法或者格式错误");
+        } finally {
+            scan.close();
+        }
     }
 }
 
 class Birthday2 {
     private LocalDate myBirthday;
     private static final LocalDate today = LocalDate.now();
-    private static DayOfWeek dayOfWeek;
+    private DayOfWeek dayOfWeek;
 
     private Birthday2() {
     }
@@ -43,127 +50,83 @@ class Birthday2 {
     }
 
     public void setDayOfWeek(DayOfWeek dayOfWeek) {
-        Birthday2.dayOfWeek = dayOfWeek;
+        this.dayOfWeek = dayOfWeek;
     }
 
-    //待重写
-    public static String formatTheDate(String myBirthdayInput) {
-        StringBuilder str = new StringBuilder();
+    public static LocalDate formatTheDate(String myBirthdayInput) throws DateTimeException {
+        String character = "[ ,./-]";
+        Pattern regex = Pattern.compile(character);
+        Matcher matcher = regex.matcher(myBirthdayInput);
+        String formattedDate = matcher.replaceAll("");
+        StringBuilder str = new StringBuilder(formattedDate);
 
-        switch (myBirthdayInput.length()) {
-            case 6:
-                for (int i = 0; i < 4; i++) {
-                    str.append(myBirthdayInput.charAt(i));
-                }
-                str.append("-0").append(myBirthdayInput.charAt(4)).append("-0").append(myBirthdayInput.charAt(5));
-                break;
-
-            case 8:
-                for (int i = 0; i < 4; i++) {
-                    str.append(myBirthdayInput.charAt(i));
-                }
-                str.append("-");
-
-                for (int i = 0; i < 2; i++) {
-                    if (myBirthdayInput.charAt(i + 4) == ' ' || myBirthdayInput.charAt(i + 4) == ','
-                            || myBirthdayInput.charAt(i + 4) == '.' || myBirthdayInput.charAt(i + 4) == '/'
-                            || myBirthdayInput.charAt(i + 4) == '-') {
-                        str.append("0");
-                        continue;
-                    }
-                    str.append(myBirthdayInput.charAt(i + 4));
-                }
-                str.append("-");
-
-                for (int i = 0; i < 2; i++) {
-                    if (myBirthdayInput.charAt(i + 6) == ' ' || myBirthdayInput.charAt(i + 6) == ','
-                            || myBirthdayInput.charAt(i + 6) == '.' || myBirthdayInput.charAt(i + 6) == '/'
-                            || myBirthdayInput.charAt(i + 6) == '-') {
-                        str.append("0");
-                        continue;
-                    }
-                    str.append(myBirthdayInput.charAt(i + 6));
-                }
-                break;
-
-            case 9:
-                for (int i = 0; i < 4; i++) {
-                    str.append(myBirthdayInput.charAt(i));
-                }
-                str.append("-0").append(myBirthdayInput.charAt(5)).append("-0").append(myBirthdayInput.charAt(7));
-                break;
-
-            case 10:
-                for (int i = 0; i < myBirthdayInput.length(); i++) {
-                    if (myBirthdayInput.charAt(i) == ' ' || myBirthdayInput.charAt(i) == '/'
-                            || myBirthdayInput.charAt(i) == ',' || myBirthdayInput.charAt(i) == '.') {
-                        str.append('-');
-                    } else {
-                        str.append(myBirthdayInput.charAt(i));
-                    }
-                }
-                break;
-
-            default:
-                throw new RuntimeException("输入的日期格式错误或输入的日期非法");
+        if (formattedDate.length() == 6) {
+            str.insert(4, "-0").insert(7, "-0");
+        } else if (formattedDate.length() == 8) {
+            str.insert(4, "-").insert(7, "-");
+        } else if (formattedDate.length() == 9) {
+            str.insert(4, "-0").insert(7, "-0");
+        } else if (formattedDate.length() == 10) {
+            str.insert(4, "-").insert(7, "-");
+        } else {
+            throw new RuntimeException("输入的日期格式错误或输入的日期非法");
         }
-        return str.toString();
+        return LocalDate.parse(str.toString());
     }
 
-    public void dayOfWeek() {
+    public String dayOfWeek() {
         dayOfWeek = myBirthday.getDayOfWeek();
-        switch (dayOfWeek.toString()) {
-            case "MONDAY":
-                System.out.println("你的生日是:星期一");
-                break;
-            case "TUESDAY":
-                System.out.println("你的生日是:星期二");
-                break;
-            case "WEDNESDAY":
-                System.out.println("你的生日是:星期三");
-                break;
-            case "THURSDAY":
-                System.out.println("你的生日是:星期四");
-                break;
-            case "FRIDAY":
-                System.out.println("你的生日是:星期五");
-                break;
-            case "SATURDAY":
-                System.out.println("你的生日是:星期六");
-                break;
-            case "SUNDAY":
-                System.out.println("你的生日是:星期日");
-                break;
+        return switch (dayOfWeek.toString()) {
+            case "MONDAY" -> "星期一";
+            case "TUESDAY" -> "星期二";
+            case "WEDNESDAY" -> "星期三";
+            case "THURSDAY" -> "星期四";
+            case "FRIDAY" -> "星期五";
+            case "SATURDAY" -> "星期六";
+            case "SUNDAY" -> "星期日";
+            default -> "";
+        };
+    }
+
+    public static int findNextLeapYear(int year) {
+        int nextYear = year + 1;
+        while (!isLeapYear(nextYear)) {
+            nextYear++;
         }
+        return nextYear;
+    }
+
+    public static boolean isLeapYear(int year) {
+        return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
     }
 
     public void setThisYears() {
-        if (myBirthday.getYear() < today.getYear()) {
+        if (myBirthday.isLeapYear() && myBirthday.getMonthValue() == 2 && myBirthday.getDayOfMonth() == 29) {
             myBirthday = myBirthday.withYear(today.getYear());
+            myBirthday = myBirthday.withYear(findNextLeapYear(myBirthday.getYear()));
+        } else {
+            myBirthday = myBirthday.withYear(today.getYear() + 1);
         }
     }
 
-    public void isBirthday() {
-        long daysUntilMyBirthday = ChronoUnit.DAYS.between(today, myBirthday);
-        if (daysUntilMyBirthday < 0) {
-            if ((myBirthday.getYear() % 4 == 0)
-                    && (myBirthday.getYear() % 100 != 0)) {
-                daysUntilMyBirthday += 366;
-            } else if (myBirthday.getYear() % 400 == 0) {
-                daysUntilMyBirthday += 366;
-            } else {
-                daysUntilMyBirthday += 365;
-            }
-        }
+    public long daysUntilMyBirthday() {
+        return ChronoUnit.DAYS.between(today, myBirthday);
+    }
 
+    public void isBirthday() {
         if (today.isEqual(myBirthday)) {
-            System.out.println("今天就是你的生日！生日快乐！");
+            System.out.println("今天是" + dayOfWeek());
+            System.out.println("是你的生日！生日快乐！");
         } else if (today.isBefore(myBirthday) && myBirthday.getYear() == today.getYear()) {
-            System.out.println("你的生日在今年，距离生日的到来还有" + daysUntilMyBirthday + "天");
+            System.out.println("你的生日是" + dayOfWeek());
+            System.out.println("你的生日在今年，距离生日的到来还有" + daysUntilMyBirthday() + "天");
         } else if (today.isAfter(myBirthday)) {
-            System.out.println("你的生日已经过去了哦，距离你明年的生日到来还有" + daysUntilMyBirthday + "天");
+            setThisYears();
+            System.out.println("你的生日是" + dayOfWeek());
+            System.out.println("你的生日已经过去了哦，距离你生日到来还有" + daysUntilMyBirthday() + "天");
         } else {
-            System.out.println("未来的生日！请保持这份对未来的热情，距离生日到来还有" + daysUntilMyBirthday + "天");
+            System.out.println("你的生日是" + dayOfWeek());
+            System.out.println("未来的生日！请保持这份对未来的热情，距离生日到来还有" + daysUntilMyBirthday() + "天");
         }
     }
 }
