@@ -4,6 +4,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Scanner;
 
+// 注意，代码中存在未修复的bug，如果需要使用，请使用另外一个版本
 public class Birthday {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
